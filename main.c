@@ -3,11 +3,14 @@
 #include <assert.h>
 #include <string.h>
 
+#include "log.h"
+
 typedef uint8_t byte;
 typedef uint16_t word;
 typedef word address;
 #define MEMSIZE (64*1024) 
 byte mem[MEMSIZE];
+
 
 void b_write(address adr, byte val) {
     mem[adr] = val;
@@ -71,3 +74,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
