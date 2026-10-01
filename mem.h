@@ -1,4 +1,5 @@
 #pragma once
+
 #include <stdint.h>
 
 typedef uint8_t byte;
@@ -7,6 +8,7 @@ typedef word address;
 #define MEMSIZE (64*1024) 
 extern byte mem[MEMSIZE];
 extern word reg[8];
+#define pc reg[7]
 
 void b_write(address adr, byte val);
 byte b_read(address adr);

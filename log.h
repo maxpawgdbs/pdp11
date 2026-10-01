@@ -1,4 +1,5 @@
 #pragma once
+
 enum LOG_LEVEL {
     DEBUG,
     TRACE,

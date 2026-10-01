@@ -5,6 +5,7 @@
 
 #include "log.h"
 #include "mem.h"
+#include "run.h"
 
 void load_data() {
     address adr, size;
@@ -44,10 +45,11 @@ int main(int argc, char *argv[])
         load_data();
     }
     
-
-    mem_dump(0x40, 20);
-    trace(INFO, "\n");
-    mem_dump(0x200, 0x26);
+    set_log_level(TRACE);
+    run();
+    // mem_dump(0x40, 20);
+    // trace(INFO, "\n");
+    // mem_dump(0x200, 0x26);
 
     return 0;
 }
