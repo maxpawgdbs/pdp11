@@ -52,6 +52,11 @@ void do_inc() {}
 void do_sob() {}
 void do_halt()
 {
+    trace(TRACE,
+        "\nr0:%ho r1:%ho r2:%ho r3:%ho "
+        "r4:%ho r5:%ho r6:%ho r7:%ho\n",
+        reg[0], reg[1], reg[2], reg[3],
+        reg[4], reg[5], reg[6], reg[7]);
     trace(INFO, "THE END!!!\n");
     exit(0);
 }
