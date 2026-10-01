@@ -3,14 +3,7 @@
 #include <assert.h>
 #include <stdarg.h>
 
-
-enum LOG_LEVEL {
-    DEBUG,
-    TRACE,
-    INFO,
-    WARNING,
-    ERROR
-};
+#include "log.h"
 
 int log_level = INFO;
 

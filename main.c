@@ -55,7 +55,7 @@ void load_file(const char * filename) {
 
 void mem_dump(address adr, int size) {
     for (int i = 0; i < size; i += 2) {
-        printf("%06o: %06o %04x\n", adr + i, w_read(adr + i), w_read(adr + i));
+        trace(INFO, "%06o: %06o %04x\n", adr + i, w_read(adr + i), w_read(adr + i));
     }
 }
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     
 
     mem_dump(0x40, 20);
-    printf("\n");
+    trace(INFO, "\n");
     mem_dump(0x200, 0x26);
 
     return 0;
