@@ -3,6 +3,9 @@
 
 #include "mem.h"
 
+byte mem[MEMSIZE];
+word reg[8];
+
 void b_write(address adr, byte val) {
     mem[adr] = val;
 }
