@@ -47,9 +47,6 @@ int main(int argc, char *argv[])
     
     set_log_level(TRACE);
     run();
-    // mem_dump(0x40, 20);
-    // trace(INFO, "\n");
-    // mem_dump(0x200, 0x26);
 
     return 0;
 }
