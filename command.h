@@ -1,13 +1,6 @@
 #pragma once
 #include "mem.h"
 
-void do_add();
-void do_mov();
-void do_inc();
-void do_sob();
-void do_halt();
-void do_nothing();
-
 typedef struct {
     word mask;
     word opcode;
@@ -15,4 +8,19 @@ typedef struct {
     void (*do_command)(void);
 } Command;
 
+struct Argument {
+    word value;
+    address adr;
+};
+
+struct Argument get_mr(word w);
+
 extern const Command command[];
+extern struct Argument ss, dd;
+
+void do_add();
+void do_mov();
+void do_inc();
+void do_sob();
+void do_halt();
+void do_nothing();

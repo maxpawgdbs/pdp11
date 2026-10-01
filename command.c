@@ -1,18 +1,8 @@
 #include <stdlib.h>
 
 #include "log.h"
+#include "mem.h"
 #include "command.h"
-
-void do_add() {}
-void do_mov() {}
-void do_inc() {}
-void do_sob() {}
-void do_halt()
-{
-    trace(INFO, "\nTHE END!!!\n");
-    exit(0);
-}
-void do_nothing() {}
 
 const Command command[] = {
     {0xF000, 0x6000, "add", do_add},
@@ -22,3 +12,47 @@ const Command command[] = {
     {0xFFFF, 0x0000, "halt", do_halt},
     {0x0000, 0x0000, "unknown", do_nothing},
 };
+
+struct Argument ss, dd;
+
+struct Argument get_mr(word w) {
+    struct Argument out;
+
+    int r = w & 0x0007, m = (w >> 3) & 0x0007;
+    switch (m) {
+        case (0):
+            out.adr = r;
+            out.value = reg[out.adr];
+            trace(TRACE, "R%d ", r);
+            break;
+        case (1):
+            out.adr = reg[r];
+            out.value = mem[out.adr];
+            trace(TRACE, "(R%d) ", r);
+            break;
+        case (2):
+            out.adr = reg[r];
+            out.value = mem[out.adr];
+            reg[r] += 2;
+            trace(TRACE, "(R%d)+ ", r);
+            break;
+        default:
+            trace(ERROR, "Mode %d not implented yet!\n", m);
+    }
+    return out;
+}
+
+void do_add() {
+    w_write(dd.adr, ss.value + dd.value);
+}
+void do_mov() {
+    w_write(dd.adr, ss.value);
+}
+void do_inc() {}
+void do_sob() {}
+void do_halt()
+{
+    trace(INFO, "THE END!!!\n");
+    exit(0);
+}
+void do_nothing() {}
