@@ -13,7 +13,7 @@ int set_log_level(int level) {
     return last;
 }
 
-void trace(int level, char *format, ...) {
+void trace(int level, const char *format, ...) {
     if (level >= log_level) {
         va_list args;
         va_start(args, format);
