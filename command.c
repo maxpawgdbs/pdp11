@@ -19,6 +19,8 @@ struct Argument get_mr(word w) {
     struct Argument out;
 
     int r = w & 0x0007, m = (w >> 3) & 0x0007;
+    out.reg = r;
+    out.mode = m;
     switch (m) {
         case (0):
             out.adr = r;
@@ -27,12 +29,12 @@ struct Argument get_mr(word w) {
             break;
         case (1):
             out.adr = reg[r];
-            out.value = mem[out.adr];
+            out.value = w_read(out.adr);
             trace(TRACE, "(R%d) ", r);
             break;
         case (2):
             out.adr = reg[r];
-            out.value = mem[out.adr];
+            out.value = w_read(out.adr);
             reg[r] += 2;
             trace(TRACE, "(R%d)+ ", r);
             break;
@@ -43,10 +45,22 @@ struct Argument get_mr(word w) {
 }
 
 void do_add() {
-    w_write(dd.adr, ss.value + dd.value);
+    switch (dd.mode) {
+        case 0:
+            reg[dd.adr] = ss.value + dd.value;
+            break;
+        default:
+            w_write(dd.adr, ss.value + dd.value);
+    }
 }
 void do_mov() {
-    w_write(dd.adr, ss.value);
+    switch (dd.mode) {
+        case 0:
+            reg[dd.adr] = ss.value;
+            break;
+        default:
+            w_write(dd.adr, ss.value);
+    }
 }
 void do_inc() {}
 void do_sob() {}

@@ -11,6 +11,8 @@ typedef struct {
 struct Argument {
     word value;
     address adr;
+    byte mode;
+    byte reg;
 };
 
 struct Argument get_mr(word w);
