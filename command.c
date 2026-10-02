@@ -5,13 +5,13 @@
 #include "command.h"
 
 const Command command[] = {
-    {0xF000, OP_ADD, "add", do_add},
-    {0xF000, OP_SUB, "sub", do_sub},
-    {0xF000, OP_MOV, "mov", do_mov},
-    {0xFFC0, OP_INC, "inc", do_inc},
-    {0xFE00, OP_SOB, "sob", do_sob},
-    {0xFFFF, OP_HALT, "halt", do_halt},
-    {0x0000, 0x0000, "unknown", do_nothing},
+    {0xF000, 0x6000, "add", do_add, HAS_SS | HAS_DD},
+    {0xF000, 0xE000, "sub", do_sub, HAS_SS | HAS_DD},
+    {0xF000, 0x1000, "mov", do_mov, HAS_SS | HAS_DD},
+    {0xFFC0, 0x0A80, "inc", do_inc, HAS_DD},
+    {0xFE00, 0x7E00, "sob", do_sob, NO_PARAMS}, // временно
+    {0xFFFF, 0x0000, "halt", do_halt, NO_PARAMS},
+    {0x0000, 0x0000, "unknown", do_nothing, NO_PARAMS},
 };
 
 struct Argument ss, dd;

@@ -1,11 +1,16 @@
 #pragma once
 #include "mem.h"
 
+#define NO_PARAMS 0
+#define HAS_DD 1
+#define HAS_SS 2
+
 typedef struct {
     word mask;
     word opcode;
     char *name;
     void (*do_command)(void);
+    char params;
 } Command;
 
 struct Argument {
@@ -27,12 +32,3 @@ void do_inc();
 void do_sob();
 void do_halt();
 void do_nothing();
-
-enum Opcode {
-    OP_HALT = 0x0000,
-    OP_ADD = 0x6000,
-    OP_SUB = 0xE000,
-    OP_MOV = 0x1000,
-    OP_INC = 0x0A80,
-    OP_SOB = 0x7E00,
-};
