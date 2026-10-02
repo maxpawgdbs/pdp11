@@ -14,9 +14,11 @@ void run() {
             if ((w & command[i].mask) == command[i].opcode) {
                 trace(TRACE, command[i].name);
                 trace(TRACE, " ");
-
-                if (command[i].params & 1) dd = get_mr(w);
+                
+                if (command[i].params & 8) opcode_r = get_opcode_r(w);
+                if (command[i].params & 4) nn = get_nn(w);
                 if (command[i].params & 2) ss = get_mr(w >> 6);
+                if (command[i].params & 1) dd = get_mr(w);
 
                 command[i].do_command();
                 trace(TRACE,

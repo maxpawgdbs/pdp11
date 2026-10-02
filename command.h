@@ -4,6 +4,8 @@
 #define NO_PARAMS 0
 #define HAS_DD 1
 #define HAS_SS 2
+#define HAS_NN 4
+#define HAS_R 8
 
 typedef struct {
     word mask;
@@ -21,9 +23,12 @@ struct Argument {
 };
 
 struct Argument get_mr(word w);
+word get_nn(word w);
+word get_opcode_r(word w);
 
 extern const Command command[];
 extern struct Argument ss, dd;
+extern word nn, opcode_r;
 
 void do_add();
 void do_sub();

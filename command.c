@@ -1,3 +1,4 @@
+#include <endian.h>
 #include <stdlib.h>
 
 #include "log.h"
@@ -9,12 +10,13 @@ const Command command[] = {
     {0xF000, 0xE000, "sub", do_sub, HAS_SS | HAS_DD},
     {0xF000, 0x1000, "mov", do_mov, HAS_SS | HAS_DD},
     {0xFFC0, 0x0A80, "inc", do_inc, HAS_DD},
-    {0xFE00, 0x7E00, "sob", do_sob, NO_PARAMS}, // временно
+    {0xFE00, 0x7E00, "sob", do_sob, HAS_R | HAS_NN}, // временно
     {0xFFFF, 0x0000, "halt", do_halt, NO_PARAMS},
     {0x0000, 0x0000, "unknown", do_nothing, NO_PARAMS},
 };
 
 struct Argument ss, dd;
+word nn, opcode_r;
 
 struct Argument get_mr(word w) {
     struct Argument out;
@@ -83,6 +85,16 @@ struct Argument get_mr(word w) {
     return out;
 }
 
+word get_nn(word w) {
+    trace(TRACE, "%d ", w & 0x003F);
+    return w & 0x003F;
+}
+
+word get_opcode_r(word w) {
+    trace(TRACE, "R%d ", (w >> 6) & 0x0007);
+    return (w >> 6) & 0x0007;
+}
+
 void do_add() {
     switch (dd.mode) {
         case 0:
@@ -119,7 +131,11 @@ void do_inc() {
             w_write(dd.adr, dd.value + 1);
     }
 }
-void do_sob() {}
+void do_sob() {
+    if (--reg[opcode_r] != 0) {
+        pc -= nn * 2;
+    }
+}
 void do_halt()
 {
     trace(TRACE,
