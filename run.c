@@ -15,11 +15,14 @@ void run() {
         for (int i = 0; ; i++) {
             if ((w & command[i].mask) == command[i].opcode) {
                 trace(TRACE, command[i].name);
-                if (!strcmp("add", command[i].name) ||
-                    !strcmp("mov", command[i].name)) {
+                trace(TRACE, " ");
+                switch (command[i].opcode) {
+                    case (0x6000):
+                    case (0x1000):
                     ss = get_mr(w >> 6);
                     dd = get_mr(w);
                 }
+
                 command[i].do_command();
                 trace(TRACE,
                     "\nr0:%ho r1:%ho r2:%ho r3:%ho "
