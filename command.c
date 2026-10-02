@@ -6,7 +6,7 @@
 
 const Command command[] = {
     {0xF000, 0x6000, "add", do_add},
-    {0xF000, 0xB000, "sub", do_sub},
+    {0xF000, 0xE000, "sub", do_sub},
     {0xF000, 0x1000, "mov", do_mov},
     {0xFFC0, 0x0A80, "inc", do_inc},
     {0xFE00, 0x7E00, "sob", do_sob},
@@ -48,8 +48,9 @@ struct Argument get_mr(word w) {
             trace(TRACE, "@(R%d)+ ", r);
             break;
         case (4):
-            reg[r]--;
-            if (r >= 6) reg[r]--;
+            // reg[r]--;
+            // if (r >= 6) reg[r]--;
+            reg[r] -= 2; // оставим определение байтовых команд до самих байтовых команд))
             out.adr = reg[r];
             out.value = w_read(out.adr);
             trace(TRACE, "-(R%d) ", r);
@@ -64,14 +65,14 @@ struct Argument get_mr(word w) {
         case (6):
             x = w_read(pc);
             pc += 2;
-            out.adr = reg[r] + (int)x; // так как x может быть отрицательным. мб надо както по другому превращать эти байты
+            out.adr = reg[r] + x; // интересно что благодаря переполнению можно забить на преобразование и считать в беззнаковых типах
             out.value = w_read(out.adr);
             trace(TRACE, "%d(R%d) ", x, r);
             break;
         case (7):
             x = w_read(pc);
             pc += 2;
-            out.adr = reg[r] + (int) x;
+            out.adr = reg[r] + x;
             out.adr = w_read(out.adr);
             out.value = w_read(out.adr);
             trace(TRACE, "@%d(R%d) ", x, r);
