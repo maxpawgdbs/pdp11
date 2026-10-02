@@ -20,6 +20,7 @@ struct Argument get_mr(word w) {
     struct Argument out;
 
     int r = w & 0x0007, m = (w >> 3) & 0x0007;
+    word x;
     out.reg = r;
     out.mode = m;
     switch (m) {
@@ -44,21 +45,36 @@ struct Argument get_mr(word w) {
             out.adr = w_read(out.adr);
             out.value = w_read(out.adr);
             reg[r] += 2;
-            trace(TRACE, "@(R%d)+", r);
+            trace(TRACE, "@(R%d)+ ", r);
             break;
         case (4):
             reg[r]--;
             if (r >= 6) reg[r]--;
             out.adr = reg[r];
             out.value = w_read(out.adr);
-            trace(TRACE, "-(R%d)", r);
+            trace(TRACE, "-(R%d) ", r);
             break;
         case (5):
             reg[r] -= 2;
             out.adr = reg[r];
             out.adr = w_read(out.adr);
             out.value = w_read(out.adr);
-            trace(TRACE, "@-(R%d)", r);
+            trace(TRACE, "@-(R%d) ", r);
+            break;
+        case (6):
+            x = w_read(pc);
+            pc += 2;
+            out.adr = reg[r] + (int)x; // так как x может быть отрицательным. мб надо както по другому превращать эти байты
+            out.value = w_read(out.adr);
+            trace(TRACE, "%d(R%d) ", x, r);
+            break;
+        case (7):
+            x = w_read(pc);
+            pc += 2;
+            out.adr = reg[r] + (int) x;
+            out.adr = w_read(out.adr);
+            out.value = w_read(out.adr);
+            trace(TRACE, "@%d(R%d) ", x, r);
             break;
         default:
             trace(ERROR, "Mode %d not implented yet!\n", m);
