@@ -39,6 +39,27 @@ struct Argument get_mr(word w) {
             reg[r] += 2;
             trace(TRACE, "(R%d)+ ", r);
             break;
+        case (3):
+            out.adr = reg[r];
+            out.adr = w_read(out.adr);
+            out.value = w_read(out.adr);
+            reg[r] += 2;
+            trace(TRACE, "@(R%d)+", r);
+            break;
+        case (4):
+            reg[r]--;
+            if (r >= 6) reg[r]--;
+            out.adr = reg[r];
+            out.value = w_read(out.adr);
+            trace(TRACE, "-(R%d)", r);
+            break;
+        case (5):
+            reg[r] -= 2;
+            out.adr = reg[r];
+            out.adr = w_read(out.adr);
+            out.value = w_read(out.adr);
+            trace(TRACE, "@-(R%d)", r);
+            break;
         default:
             trace(ERROR, "Mode %d not implented yet!\n", m);
     }
