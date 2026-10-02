@@ -16,6 +16,7 @@ void run() {
                 trace(TRACE, " ");
                 switch (command[i].opcode) {
                     case (0x6000):
+                    case (0xB000):
                     case (0x1000):
                         ss = get_mr(w >> 6);
                     case (0x0A80):

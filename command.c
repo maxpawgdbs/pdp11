@@ -6,6 +6,7 @@
 
 const Command command[] = {
     {0xF000, 0x6000, "add", do_add},
+    {0xF000, 0xB000, "sub", do_sub},
     {0xF000, 0x1000, "mov", do_mov},
     {0xFFC0, 0x0A80, "inc", do_inc},
     {0xFE00, 0x7E00, "sob", do_sob},
@@ -53,6 +54,15 @@ void do_add() {
             w_write(dd.adr, ss.value + dd.value);
     }
 }
+void do_sub() {
+    switch (dd.mode) {
+        case 0:
+            reg[dd.adr] -= ss.value;
+            break;
+        default:
+            w_write(dd.adr, dd.value - ss.value);
+    }
+}
 void do_mov() {
     switch (dd.mode) {
         case 0:
@@ -68,7 +78,7 @@ void do_inc() {
             reg[dd.adr]++;
             break;
         default:
-            w_write(dd.adr, w_read(dd.adr) + 1);
+            w_write(dd.adr, dd.value + 1);
     }
 }
 void do_sob() {}

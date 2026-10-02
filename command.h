@@ -21,6 +21,7 @@ extern const Command command[];
 extern struct Argument ss, dd;
 
 void do_add();
+void do_sub();
 void do_mov();
 void do_inc();
 void do_sob();
