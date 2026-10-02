@@ -15,11 +15,11 @@ void run() {
                 trace(TRACE, command[i].name);
                 trace(TRACE, " ");
                 switch (command[i].opcode) {
-                    case (0x6000):
-                    case (0xB000):
-                    case (0x1000):
+                    case (OP_ADD):
+                    case (OP_MOV):
+                    case (OP_SUB):
                         ss = get_mr(w >> 6);
-                    case (0x0A80):
+                    case (OP_INC):
                         dd = get_mr(w);
                 }
 
