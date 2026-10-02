@@ -1,5 +1,3 @@
-#include <string.h>
-
 #include "mem.h"
 #include "log.h"
 #include "command.h"
@@ -19,8 +17,9 @@ void run() {
                 switch (command[i].opcode) {
                     case (0x6000):
                     case (0x1000):
-                    ss = get_mr(w >> 6);
-                    dd = get_mr(w);
+                        ss = get_mr(w >> 6);
+                    case (0x0A80):
+                        dd = get_mr(w);
                 }
 
                 command[i].do_command();

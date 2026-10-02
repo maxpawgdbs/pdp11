@@ -62,7 +62,15 @@ void do_mov() {
             w_write(dd.adr, ss.value);
     }
 }
-void do_inc() {}
+void do_inc() {
+    switch (dd.mode) {
+        case 0:
+            reg[dd.adr]++;
+            break;
+        default:
+            w_write(dd.adr, w_read(dd.adr) + 1);
+    }
+}
 void do_sob() {}
 void do_halt()
 {
