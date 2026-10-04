@@ -15,10 +15,11 @@ void run() {
                 trace(TRACE, command[i].name);
                 trace(TRACE, " ");
                 
-                if (command[i].params & 8) opcode_r = get_opcode_r(w);
-                if (command[i].params & 4) nn = get_nn(w);
-                if (command[i].params & 2) ss = get_mr(w >> 6);
-                if (command[i].params & 1) dd = get_mr(w);
+                is_b = (command[i].params & HAS_B);
+                if (command[i].params & HAS_R) opcode_r = get_opcode_r(w);
+                if (command[i].params & HAS_NN) nn = get_nn(w);
+                if (command[i].params & HAS_SS) ss = get_mr(w >> 6);
+                if (command[i].params & HAS_DD) dd = get_mr(w);
 
                 command[i].do_command();
                 trace(TRACE,

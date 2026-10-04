@@ -1,4 +1,3 @@
-#include <endian.h>
 #include <stdlib.h>
 
 #include "log.h"
@@ -9,14 +8,16 @@ const Command command[] = {
     {0xF000, 0x6000, "add", do_add, HAS_SS | HAS_DD},
     {0xF000, 0xE000, "sub", do_sub, HAS_SS | HAS_DD},
     {0xF000, 0x1000, "mov", do_mov, HAS_SS | HAS_DD},
+    {0xF000, 0x9000, "movb", do_movb, HAS_SS | HAS_DD | HAS_B},
     {0xFFC0, 0x0A80, "inc", do_inc, HAS_DD},
-    {0xFE00, 0x7E00, "sob", do_sob, HAS_R | HAS_NN}, // временно
+    {0xFE00, 0x7E00, "sob", do_sob, HAS_R | HAS_NN},
     {0xFFFF, 0x0000, "halt", do_halt, NO_PARAMS},
-    {0x0000, 0x0000, "unknown", do_nothing, NO_PARAMS},
+    {0x0000, 0x0000, "unknown", do_nothing, NO_PARAMS}, // nothing всегда в конце
 };
 
 struct Argument ss, dd;
 word nn, opcode_r;
+byte is_b = 0;
 
 struct Argument get_mr(word w) {
     struct Argument out;
@@ -25,64 +26,123 @@ struct Argument get_mr(word w) {
     word x;
     out.reg = r;
     out.mode = m;
-    switch (m) {
-        case (0):
-            out.adr = r;
-            out.value = reg[out.adr];
-            trace(TRACE, "R%d ", r);
-            break;
-        case (1):
-            out.adr = reg[r];
-            out.value = w_read(out.adr);
-            trace(TRACE, "(R%d) ", r);
-            break;
-        case (2):
-            out.adr = reg[r];
-            out.value = w_read(out.adr);
-            reg[r] += 2;
-            trace(TRACE, "(R%d)+ ", r);
-            break;
-        case (3):
-            out.adr = reg[r];
-            out.adr = w_read(out.adr);
-            out.value = w_read(out.adr);
-            reg[r] += 2;
-            trace(TRACE, "@(R%d)+ ", r);
-            break;
-        case (4):
-            // reg[r]--;
-            // if (r >= 6) reg[r]--;
-            reg[r] -= 2; // оставим определение байтовых команд до самих байтовых команд))
-            out.adr = reg[r];
-            out.value = w_read(out.adr);
-            trace(TRACE, "-(R%d) ", r);
-            break;
-        case (5):
-            reg[r] -= 2;
-            out.adr = reg[r];
-            out.adr = w_read(out.adr);
-            out.value = w_read(out.adr);
-            trace(TRACE, "@-(R%d) ", r);
-            break;
-        case (6):
-            x = w_read(pc);
-            pc += 2;
-            out.adr = reg[r] + x; // интересно что благодаря переполнению можно забить на преобразование и считать в беззнаковых типах
-            out.value = w_read(out.adr);
-            trace(TRACE, "%d(R%d) ", x, r);
-            break;
-        case (7):
-            x = w_read(pc);
-            pc += 2;
-            out.adr = reg[r] + x;
-            out.adr = w_read(out.adr);
-            out.value = w_read(out.adr);
-            trace(TRACE, "@%d(R%d) ", x, r);
-            break;
-        default:
-            trace(ERROR, "Mode %d not implented yet!\n", m);
+    if (!is_b) {
+        switch (m) {
+            case (0):
+                out.adr = r;
+                out.value = reg[out.adr];
+                trace(TRACE, "R%d ", r);
+                break;
+            case (1):
+                out.adr = reg[r];
+                out.value = w_read(out.adr);
+                trace(TRACE, "(R%d) ", r);
+                break;
+            case (2):
+                out.adr = reg[r];
+                out.value = w_read(out.adr);
+                reg[r] += 2;
+                // if (is_b && r <= 7) reg[r] -= 1;
+                trace(TRACE, "(R%d)+ ", r);
+                break;
+            case (3):
+                out.adr = reg[r];
+                out.adr = w_read(out.adr);
+                out.value = w_read(out.adr);
+                reg[r] += 2;
+                trace(TRACE, "@(R%d)+ ", r);
+                break;
+            case (4):
+                reg[r] -= 2;
+                // if (is_b && r <= 7) reg[r] += 1;
+                out.adr = reg[r];
+                out.value = w_read(out.adr);
+                trace(TRACE, "-(R%d) ", r);
+                break;
+            case (5):
+                reg[r] -= 2;
+                out.adr = reg[r];
+                out.adr = w_read(out.adr);
+                out.value = w_read(out.adr);
+                trace(TRACE, "@-(R%d) ", r);
+                break;
+            case (6):
+                x = w_read(pc);
+                pc += 2;
+                out.adr = reg[r] + x; // интересно что благодаря переполнению можно забить на преобразование и считать в беззнаковых типах
+                out.value = w_read(out.adr);
+                trace(TRACE, "%d(R%d) ", x, r);
+                break;
+            case (7):
+                x = w_read(pc);
+                pc += 2;
+                out.adr = reg[r] + x;
+                out.adr = w_read(out.adr);
+                out.value = w_read(out.adr);
+                trace(TRACE, "@%d(R%d) ", x, r);
+                break;
+            default:
+                trace(ERROR, "Mode %d not implented yet!\n", m);
+        }
+        return out;
+    } else {
+        switch (m) {
+            case (0):
+                out.adr = r;
+                out.value = (out.value & 0xFF00) | (reg[out.adr] & 0x00FF);
+                trace(TRACE, "R%d ", r);
+                break;
+            case (1):
+                out.adr = reg[r];
+                out.value = b_read(out.adr);
+                trace(TRACE, "(R%d) ", r);
+                break;
+            case (2):
+                out.adr = reg[r];
+                out.value = b_read(out.adr);
+                reg[r] += 1;
+                trace(TRACE, "(R%d)+ ", r);
+                break;
+            case (3):
+                out.adr = reg[r];
+                out.adr = w_read(out.adr);
+                out.value = b_read(out.adr);
+                reg[r] += 2;
+                trace(TRACE, "@(R%d)+ ", r);
+                break;
+            case (4):
+                reg[r] -= 1;
+                out.adr = reg[r];
+                out.value = b_read(out.adr);
+                trace(TRACE, "-(R%d) ", r);
+                break;
+            case (5):
+                reg[r] -= 2;
+                out.adr = reg[r];
+                out.adr = w_read(out.adr);
+                out.value = b_read(out.adr);
+                trace(TRACE, "@-(R%d) ", r);
+                break;
+            case (6):
+                x = w_read(pc);
+                pc += 2;
+                out.adr = reg[r] + x; // интересно что благодаря переполнению можно забить на преобразование и считать в беззнаковых типах
+                out.value = b_read(out.adr);
+                trace(TRACE, "%d(R%d) ", x, r);
+                break;
+            case (7):
+                x = w_read(pc);
+                pc += 2;
+                out.adr = reg[r] + x;
+                out.adr = w_read(out.adr);
+                out.value = b_read(out.adr);
+                trace(TRACE, "@%d(R%d) ", x, r);
+                break;
+            default:
+                trace(ERROR, "Mode %d not implented yet!\n", m);
+        }
+        return out;
     }
-    return out;
 }
 
 word get_nn(word w) {
@@ -120,6 +180,16 @@ void do_mov() {
             break;
         default:
             w_write(dd.adr, ss.value);
+    }
+}
+void do_movb() {
+    switch (dd.mode) {
+        case 0:
+            reg[dd.adr] = ss.value & 0x00FF;
+            if ((ss.value & 0x00FF) >= 0x0080) reg[dd.adr] |= 0xFF00;
+            break;
+        default:
+            b_write(dd.adr, ss.value);
     }
 }
 void do_inc() {
