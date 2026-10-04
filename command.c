@@ -89,7 +89,8 @@ struct Argument get_mr(word w) {
         switch (m) {
             case (0):
                 out.adr = r;
-                out.value = (out.value & 0xFF00) | (reg[out.adr] & 0x00FF);
+                out.value = reg[out.adr] & 0x00FF;
+                if (out.value >= 0x8000) out.value |= 0xFF00;
                 trace(TRACE, "R%d ", r);
                 break;
             case (1):
@@ -101,6 +102,7 @@ struct Argument get_mr(word w) {
                 out.adr = reg[r];
                 out.value = b_read(out.adr);
                 reg[r] += 1;
+                if (r > 5) reg[r] += 1;
                 trace(TRACE, "(R%d)+ ", r);
                 break;
             case (3):
@@ -112,6 +114,7 @@ struct Argument get_mr(word w) {
                 break;
             case (4):
                 reg[r] -= 1;
+                if (r > 5) reg[r] -= 1;
                 out.adr = reg[r];
                 out.value = b_read(out.adr);
                 trace(TRACE, "-(R%d) ", r);
