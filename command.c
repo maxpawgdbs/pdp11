@@ -90,7 +90,6 @@ struct Argument get_mr(word w) {
             case (0):
                 out.adr = r;
                 out.value = reg[out.adr] & 0x00FF;
-                if (out.value >= 0x8000) out.value |= 0xFF00;
                 trace(TRACE, "R%d ", r);
                 break;
             case (1):
